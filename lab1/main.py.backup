@@ -1,0 +1,186 @@
+import random
+import math
+import pandas as pd
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import numpy as np
+
+def first_func_one(lm, x):
+    return 1 - np.e ** (-lm * x)
+
+def generate_first(lm):
+    nums = []
+    xrange = range(10000)
+    for x in xrange:
+        eps = random.uniform(0, 1)
+        xi = (-1 / lm) * math.log(eps)
+        nums.append(xi)
+    return nums
+
+def first_func(nums, lm):
+    F = []
+    for x in nums:
+        Fx = 1 - math.e**(-lm * x)
+        F.append(Fx)
+
+    return F
+
+def first_disp(lm):
+    return lm**-2
+
+def first_m(lm):
+    return lm**-1
+
+def second_disp(b):
+    return b**2
+
+def second_m(mu):
+    return mu
+
+def second_func(nums, a, b):
+    F = []
+    for x in nums:
+        Fx = (1 / (b*math.sqrt(2 * math.pi))) * math.exp((-(x-a)**2)/2*b**2)
+        F.append(Fx)
+
+    return F
+
+def plot_first_hist(lm):
+    nums = np.array(generate_first(lm))
+    D = first_disp(lm)
+    M = first_m(lm)
+    plt.hist(nums)
+    plt.title("Exponential Histogram lambda {} D {} M {}".format(lm, D, M))
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
+
+def plot_first_func(lm):
+    nums = np.array(generate_first(lm))
+    F = first_func(nums, lm)
+    plt.title("F(x) = 1 - e^(-lm*x) lambda {}".format(lm))
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.plot(nums, F)
+    plt.show()
+
+def calc_mu():
+    mu = 0
+    for i in range(12):
+        mu += random.uniform(0, 1)
+    mu -= 6
+    return mu
+
+def generate_second(a, b):
+    nums = []
+    xrange = range(10000)
+    for x in xrange:
+        xi = b*calc_mu() + a
+        nums.append(xi)
+    return nums
+
+def plot_second_hist(a, b):
+    mu = calc_mu()
+    nums = np.array(generate_second(a, b))
+    D = second_disp(b)
+    M = second_m(mu)
+    plt.hist(nums)
+    plt.title("Norm Histogram a {} b {} D {} M {}".format(a, b, D, M))
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
+
+def plot_second_func(a, b):
+    mu = calc_mu()
+    nums = np.array(generate_second(a, b))
+    F = second_func(nums, a, b)
+    plt.title("F(x) = 1 / (bsqrt(2pi))exp(-(x-a)^2 / 2b^2) a {} b {}".format(a, b))
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.plot(nums, F)
+    plt.show()
+
+def third_disp():
+    return 0.5
+
+def third_m():
+    return 0.5
+
+def generate_third(z_zero):
+    nums = []
+    a = 5**13
+    c = 2**31
+
+    zrange = range(1, 10000)
+    z_last = z_zero
+    for z in zrange:
+        zi = (a * z_last) % c
+        xi = zi / c
+        z_last = zi
+        nums.append(xi)
+    
+    return nums
+
+def third_func(nums):
+    F = []
+    b = 1
+    a = 0
+    for x in nums:
+        Fx = 1 / (b - a)
+        F.append(Fx)
+
+    return F
+
+def plot_third_hist(z_zero):
+    nums = np.array(generate_third(z_zero))
+    plt.hist(nums)
+    D = third_disp()
+    M = third_m()
+    plt.title("Eq Histogram z0 {} D {} M {}".format(z_zero, D, M))
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.show()
+
+def plot_third_func(z_zero):
+    nums = np.array(generate_third(z_zero))
+    F = third_func(nums)
+    plt.title("F(x) = 1 / (b - a) z0 {}".format(z_zero))
+    plt.xlabel("Value")
+    plt.ylabel("Frequency")
+    plt.plot(nums, F)
+    plt.show()
+
+def first_alt(lm):
+    df_exponential = pd.DataFrame()
+    x = (-1/lm) * np.log(np.random.uniform(size=10000))
+    df_exponential[str(lm)] = x
+    return df_exponential
+
+def ksi_first(lm):
+    df_exponential = first_alt(lm)
+    print(df_exponential.std() **2)
+    df_exponential_stats = pd.DataFrame(
+        df_exponential[str(lm)]
+    ).assign(Bin=lambda x: pd.cut(x[str(lm)], bins=20)
+            ).groupby(['Bin']
+                     ).agg({str(lm): ['count']})
+    df_exponential_stats.columns = ['count']
+    df_exponential_stats = df_exponential_stats.reset_index()
+    df_exponential_stats['expected'] = df_exponential_stats['Bin'].apply(
+        lambda x: first_func_one(lm, x.right) - first_func_one(lm, x.left)
+    ).astype(float)*10000
+    chi_square = (((df_exponential_stats['count'] - df_exponential_stats['expected']) ** 2) / df_exponential_stats['expected']).sum()
+    print('Lambda:', lm, '; chi-square: ', chi_square)
+    print('Critical {}'.format(stats.chi2.ppf(q = 0.95, df = 18) ))
+    df_exponential.hist(bins=20, figsize=(15, 10))
+    plt.show()
+
+
+#plot_first_hist(0.5)
+#plot_second_hist(-0.5, 0.5)
+#plot_third_func(15)
+ksi_first(0.5)
+
+
+
+

@@ -1,0 +1,115 @@
+import random
+import sys
+import math
+import pandas as pd
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import numpy as np
+
+def first_func_one(lm, x):
+    return 1 - np.e ** (-lm * x)
+
+def second_func_one(a, b, x):
+    return stats.norm.cdf((x - a)/b) - 0.5
+
+def first_alt(lm):
+    e_arr = np.random.uniform(size=(10000))
+    df_exponential = pd.DataFrame()
+    x = (-1/lm) * np.log(e_arr)
+    df_exponential[str(lm)] = x
+    return df_exponential
+
+def second_alt(a, b):
+    e_arr = np.random.uniform(size=(10000, 12))
+    df_normal = pd.DataFrame()
+    mus = np.sum(e_arr, axis=1) - 6
+    x = b * mus + a
+    df_normal[str(a + b)] = x
+    return df_normal
+
+def third_alt(a, c):
+    df_congr = pd.DataFrame()
+    z_i = 11
+    n_generated = []
+    for i in range(10000):
+        x_i = z_i / c
+        z_i = (a*z_i) % c
+        n_generated.append(x_i)
+    df_congr[str(a + c)] = n_generated
+    return df_congr
+
+def ksi_first(lm):
+    df_exponential = first_alt(lm)
+    print('M:', df_exponential.std())
+    print('D:', df_exponential.std() **2)
+    df_exponential_stats = pd.DataFrame(
+        df_exponential[str(lm)]
+    ).assign(Bin=lambda x: pd.cut(x[str(lm)], bins=20)
+            ).groupby(['Bin']
+                     ).agg({str(lm): ['count']})
+    df_exponential_stats.columns = ['count']
+    df_exponential_stats = df_exponential_stats.reset_index()
+    df_exponential_stats['expected'] = df_exponential_stats['Bin'].apply(
+        lambda x: first_func_one(lm, x.right) - first_func_one(lm, x.left)
+    ).astype(float)*10000
+    chi_square = (((df_exponential_stats['count'] - df_exponential_stats['expected']) ** 2) / df_exponential_stats['expected']).sum()
+    print('Lambda:', lm, '; chi-square: ', chi_square)
+    print('Critical {}'.format(stats.chi2.ppf(q = 0.95, df = 18) ))
+    df_exponential.hist(bins=20, figsize=(15, 10))
+    plt.show()
+
+def ksi_second(a, b):
+    df_normal = second_alt(a, b)
+    print('M:', df_normal.std())
+    print('D:', df_normal.std() **2)
+    df_norm_stats = pd.DataFrame(
+        df_normal[str(a + b)]
+    ).assign(Bin=lambda x: pd.cut(x[str(a + b)], bins=20)
+            ).groupby(['Bin']
+                     ).agg({str(a + b): ['count']})
+    df_norm_stats.columns = ['count']
+    df_norm_stats = df_norm_stats.reset_index()
+    df_norm_stats['expected'] = df_norm_stats['Bin'].apply(
+        lambda x: second_func_one(a, b, x.right) - second_func_one(a, b, x.left)
+    ).astype(float)*10000
+    chi_square = (((df_norm_stats['count'] - df_norm_stats['expected']) ** 2) / df_norm_stats['expected']).sum()
+    print('a:', a, 'b:', b, '; chi-square: ', chi_square)
+    print('Critical {}'.format(stats.chi2.ppf(q = 0.95, df = 17)))
+    df_normal.hist(bins=20, figsize=(15, 10))
+    plt.show()
+
+def ksi_third(a, b):
+    df_congr = third_alt(a, b)
+    print('M:', df_congr.std())
+    df_unif_stats = pd.DataFrame(
+        df_congr[str(a + b)]
+    ).assign(Bin=lambda x: pd.cut(x[str(a + b)], bins=20)
+            ).groupby(['Bin']
+                     ).agg({str(a + b): ['count']})
+    df_unif_stats.columns = ['count']
+    df_unif_stats = df_unif_stats.reset_index()
+    df_unif_stats['expected'] = 10000/20
+    chi_square = (((df_unif_stats['count'] - df_unif_stats['expected']) ** 2) / df_unif_stats['expected']).sum()
+    print('a:', df_congr[str(a + b)].min(), 'b:', df_congr[str(a + b)].max(), '; chi-square: ', chi_square)
+    print('Critical {}'.format(stats.chi2.ppf(q = 0.95, df = 17)))
+    df_congr.hist(bins=20, figsize=(15, 10))
+    plt.show()
+
+dataset_first = [0.5, 1, 1.5]
+dataset_second = [(0, 1), (0, 6), (2, 4)]
+dataset_third = [(5**13, 2**31), (5**7, 2**13), (5**7, 2**12)]
+
+plot = sys.argv[1]
+dataset = sys.argv[2]
+plot = int(plot)
+dataset = int(dataset)
+if plot is 1:
+    ksi_first(dataset_first[dataset - 1])
+if plot is 2:
+    a, b = dataset_second[dataset - 1]
+    ksi_second(a, b)
+if plot is 3:
+    a, b = dataset_third[dataset - 1]
+    ksi_third(a, b)
+
+
