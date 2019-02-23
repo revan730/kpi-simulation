@@ -34,16 +34,47 @@ class Model:
                     e.outAct()
             self.printInfo()
         self.printResult()
+        #print(self.get_results())
+        #self.get_results()
 
     def printInfo(self):
         for e in self.elementsList:
             e.printInfo()
 
+    def get_results(self):
+        res = []
+        for e in self.elementsList:
+            if isinstance(e, Process):
+                mean = e.meanQueue / self.tcurr
+                failure = e.failure / e.quantity
+                wait = e.meanQueue / (e.quantity + e.failure)
+                workload = e.workload / self.tcurr
+                print('name {} max_queue {} max_parallel {} delay_mean {} quantity {} dist {} mean queue {} failure {} wait {} workload {}'
+                .format(e.name, e.maxQueue, e.maxParallel, e.delayMean, e.quantity, e.distribution, mean, failure, wait, workload))
+                '''res.append({
+                    'name': e.name,
+                    'max_queue': e.maxQueue,
+                    'max_parallel': e.maxParallel,
+                    'delay_mean': e.delayMean,
+                    #'delay_std': e.get_delay_std(),
+                    'quantity': e.quantity,
+                    'distribution': e.distribution,
+                    'mean queue size': mean,
+                    'failure probability': failure,
+                    'avg wait time': wait,
+                    'workload': workload     
+                })'''
+        
+        #return res
+
     def printResult(self):
         print('\n-----------RESULTS----------')
         for e in self.elementsList:
+            print('\n')
             e.printResult()
             if isinstance(e, Process):
-                mean = e.getMeanQueue()
-                failure = e.getFailure() / e.getQuantity()
-                print('mean length of queue = {} \n failure probability = {}'.format(mean, failure))
+                mean = e.getMeanQueue() / self.tcurr
+                failure = e.failure / (e.quantity + e.failure)
+                wait = e.meanQueue / (e.quantity + e.failure)
+                workload = e.workload / self.tcurr
+                print('mean length of queue = {} \n failures = {} \n failure probability = {} \n wait {} \n workload {} \n in progress {} \n in queue {}'.format(mean, e.failure, failure, wait, workload, e.state, e.queue))

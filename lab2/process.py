@@ -10,6 +10,7 @@ class Process(Element):
         self.failure = 0
         self.maxQueue = 12345678999999
         self.meanQueue = 0.0
+        self.workload = 0.0
         self.nextElements = None
 
     def inAct(self, i):
@@ -31,35 +32,18 @@ class Process(Element):
                 self.queue = self.maxQueue
         if i > 0:
             self.failure += i
-
-        '''if self.getState() < self.maxParallel:
-            self.setState(self.getState() + 1)
-            self.setTnext(self.getTcurr() + self.getDelay())
-        else:
-            if self.getQueue() < self.getMaxqueue():
-                self.setQueue(self.getQueue() + 1)
-            else:
-                self.failure = self.failure + 1'''
     
     def outAct(self):
-        outcoming = self.state
-        super().outAct(self.state)
+        super().outAct(1)
         self.setTnext(sys.float_info.max)
-        self.setState(0)
+        self.state -= 1
         if self.getQueue() > 0:
-            delta = self.maxParallel
-            if self.queue < delta:
-                self.state = self.queue
-                self.queue = 0
-            else:
-                self.queue -= delta
-                self.state = self.maxParallel
+            self.queue -= 1
+            self.state += 1
             self.setTnext(self.getTcurr() + self.getDelay())
         if (self.nextElements):
             e = random.choice(self.nextElements)
-            e.inAct(outcoming)
-            #for e in self.nextElements:
-                #e.inAct(outcoming)
+            e.inAct(1)
 
     def setNextElements(self, nextElements):
         self.nextElements = nextElements
@@ -85,6 +69,7 @@ class Process(Element):
 
     def doStatistics(self, delta):
         self.meanQueue = self.getMeanQueue() + self.queue * delta
+        self.workload += self.state * delta
 
     def getMeanQueue(self):
         return self.meanQueue

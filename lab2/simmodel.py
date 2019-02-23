@@ -4,10 +4,10 @@ from model import Model
 
 class SimModel:
     def main(self):
-        c = Create(2.0)
+        c = Create(.5)
         p1 = Process(1.0, 2)
-        p21 = Process(1.1, 1)
-        p22 = Process(1.0, 2)
+        p21 = Process(4.0, 1)
+        p22 = Process(3.0, 2)
         p3 = Process(1.2, 1)
         print('id0 = {} id1= {} '.format(c.getId(), p1.getId()))
         c.setNextElement(p1)
