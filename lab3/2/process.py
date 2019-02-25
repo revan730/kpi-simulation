@@ -4,7 +4,7 @@ from element import Element
 
 class Process(Element):
     def __init__(self, delay, delay_std, maxParallel):
-        super().__init__(delay)
+        super().__init__(delay, delay_std)
         self.queue = 0
         self.delay_std = delay_std
         self.maxParallel = maxParallel
@@ -13,8 +13,7 @@ class Process(Element):
         self.meanQueue = 0.0
         self.workload = 0.0
         self.nextElements = None
-        self.otherProcess = None
-        self.transferedCount = 0
+        self.prob = None
 
     def inAct(self, i):
         delta = self.maxParallel - self.state
@@ -41,17 +40,20 @@ class Process(Element):
         self.setTnext(sys.float_info.max)
         self.state -= 1
 
-        if self.queue - self.otherProcess.queue >= 2:
-            self.queue -= 1
-            self.otherProcess.queue += 1
-            self.transferedCount += 1
-
         if self.getQueue() > 0:
             self.queue -= 1
             self.state += 1
             self.setTnext(self.getTcurr() + self.getDelay())
         if (self.nextElements):
-            e = random.choice(self.nextElements)
+            if self.prob is not None:
+                a = random.uniform(0, 1)
+                if a < self.prob:
+                    e = self.nextElements[0]
+                else:
+                    if len(self.nextElements) > 1:
+                        e = self.nextElements[1]
+            else:
+                e = random.choice(self.nextElements)
             e.inAct(1)
 
     def setNextElements(self, nextElements):

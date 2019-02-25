@@ -4,28 +4,37 @@ from model import Model
 
 class SimModel:
     def main(self):
-        p11 = Process(1, 0.3, 1)
-        p12 = Process(1, 0.3, 1)
-        p11.otherProcess = p12
-        p12.otherProcess = p11
-        c = Create(.5)
-        c.setNextElements([p11, p12])
-        p11.setMaxqueue(3)
-        p12.setMaxqueue(3)
-        p11.state = 1
-        p12.state = 1
-        c.tnext = 0.1
-        p11.queue = 2
-        p12.queue = 2
-        c.setName('CREATOR')
-        p11.setName('PROCESSOR21')
-        p12.setName('PROCESSOR22')
+        c = Create(1./15)
         c.setDistribution('exp')
-        p11.setDistribution('exp')
-        p12.setDistribution('exp')
+        c.setName('creator')
+        
+        p0 = Process(1/30, 0, 2)
+        p0.setName('doctors')
+        p0.setDistribution('exp')
+        p0.prob_h = .5
+        
+        p1 = Process(3, 8, 3)
+        p1.setName('chambers')
+        #p1.setDistribution('unif')
+        p1.setDistribution('exp')
+        
+        p2 = Process(3, 4.5, 1)
+        p2.setName('registration')
+        #p2.setDistribution('erlang')
+        p2.setDistribution('exp')
+        #p2.maxQueue = 2
 
+        p3 = Process(2, 4, 2)
+        p3.setName('lab')
+        p3.setDistribution('exp')
+        #p3.setDistribution('erlang')
+        
+        c.setNextElement(p0)
+        p0.setNextElements([p1, p2])
+        p2.setNextElements([p3])
+        p3.setNextElements([p0])
 
-        elementsList = [c,p11, p12]
+        elementsList = [c, p0, p1, p2, p3]
         model = Model(elementsList)    
         model.simulate(1000.0)
     

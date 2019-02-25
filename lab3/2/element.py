@@ -30,20 +30,16 @@ class Element:
             Element.nextId = Element.nextId + 1
             self.name = 'element'+str(self.id)
 
-    def getDelayMin(self):
-        return self.delayMean
-
-
     def getDelay(self):
-        delay = self.getDelayMin()
+        delay = self.getDelayMean()
         if self.getDistribution() == 'exp':
             delay = FunRand.exp(self.getDelayMean())
         elif self.getDistribution() == 'norm':
             delay = FunRand.norm(self.getDelayMean(), self.getDelayDev())
         elif self.getDistribution() == 'unif':
-            delay = FunRand.unif(self.getDelayMin(), self.getDelayDev())
-        elif self.getDistribution() == 'unif':
-            delay = self.getDelayMean()
+            delay = FunRand.unif(self.getDelayMean(), self.getDelayDev())
+        elif self.getDistribution() == 'erlang':
+            delay = FunRand.erlang(self.getDelayMean(), self.getDelayDev())
         return delay
 
     def getDelayDev(self):

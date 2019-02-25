@@ -1,5 +1,6 @@
 import random
 import math
+import numpy as np
 
 class FunRand:
     @staticmethod
@@ -21,3 +22,7 @@ class FunRand:
     @staticmethod
     def norm(timeMean, timeDeviation):
         return random.gauss(timeMean, timeDeviation)
+
+    @staticmethod
+    def erlang(k, theta):
+        return np.random.gamma(k, theta)
