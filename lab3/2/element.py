@@ -78,8 +78,8 @@ class Element:
     def inAct(self):
         pass
 
-    def outAct(self, q):
-        self.quantity = self.quantity + q
+    def outAct(self):
+        self.quantity = self.quantity + 1
 
     def getTnext(self):
         return self.tnext

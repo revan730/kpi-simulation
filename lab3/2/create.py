@@ -5,6 +5,7 @@ class Create(Element):
         super().__init__(delay)
 
     def outAct(self):
-        super().outAct(1)
+        super().outAct()
         self.setTnext(self.getTcurr() + self.getDelay())
-        self.getNextElement().inAct(1)
+        #TODO: Generate 3 types of patients
+        self.getNextElement().inAct({ type: 1 })

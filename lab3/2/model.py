@@ -22,7 +22,7 @@ class Model:
                     self.tnext = e.getTnext()
                     self.event = e.getId()
                     name = e.getName()
-            print("It's time for event in {} , time = {}".format(name ,self.tnext))
+            #print("It's time for event in {} , time = {}".format(name ,self.tnext))
             for e in self.elementsList:
                 e.doStatistics(self.tnext - self.tcurr)
             self.tcurr = self.tnext
@@ -32,7 +32,7 @@ class Model:
             for e in self.elementsList:
                 if e.getTnext() is self.tcurr:
                     e.outAct()
-            self.printInfo()
+            #self.printInfo()
         self.printResult()
         #print(self.get_results())
         #self.get_results()
@@ -83,7 +83,7 @@ class Model:
                 total_quantity += e.quantity
                 avg_bank += mean
                 failure_amount += e.failure
-                print('mean length of queue = {} \n failures = {} \n avg time in bank {} \n workload {} \n in progress {} \n in queue {} avg window {}'.format(mean, e.failure, wait, workload, e.state, e.queue, out_window))
+                print('mean length of queue = {} \n failures = {} \n avg time in bank {} \n workload {} \n in progress {} \n in queue {} avg window {}'.format(mean, e.failure, wait, workload, len(e.state), len(e.queue), out_window))
         print('average in bank: ', avg_bank)
         failure = failure_amount / (failure_amount + total_quantity)
         print('failure amount: ', failure)

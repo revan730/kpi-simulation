@@ -36,5 +36,5 @@ class SimModel:
 
         elementsList = [c, p0, p1, p2, p3]
         model = Model(elementsList)    
-        model.simulate(1000.0)
+        model.simulate(100000.0)
     
