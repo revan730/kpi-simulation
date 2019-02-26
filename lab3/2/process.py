@@ -1,5 +1,6 @@
 import sys
 import random
+import numpy as np
 from element import Element
 
 class Process(Element):
@@ -15,17 +16,24 @@ class Process(Element):
         self.workload = 0.0
         self.nextElements = None
         self.prob = None
+        self.chambers = None
+        self.lab = None
+        self.registration = None
 
     def inAct(self, patient):
-        if patient is None:
-            pass
-        elif len(self.state) <= self.maxParallel:
+        if len(self.state) <= self.maxParallel:
             self.state.append(patient)
         elif len(self.queue) <= self.maxQueue:
             self.queue.append(patient)
         else:
             self.failure += 1
         # TODO: Set delay depending on patient type
+        '''
+        if self.name == 'doctors':
+            self.setTnext(self.getTcurr() + patient['delay'])
+        else:
+            self.setTnext(self.getTcurr() + self.getDelay())
+            '''
         self.setTnext(self.getTcurr() + self.getDelay())
 
     
@@ -36,19 +44,23 @@ class Process(Element):
         p = None
         if len(self.state) > 0:
             p = self.state.pop(0)
+        
+        self.setTnext(self.getTcurr() + self.getDelay())
 
         if len(self.getQueue()) > 0:
             pFromQueue = self.queue.pop(0)
             self.state.append(pFromQueue)
-            self.setTnext(self.getTcurr() + self.getDelay())
-        if (self.nextElements):
-            if self.prob is not None:
-                a = random.uniform(0, 1)
-                if a < self.prob:
+        if (self.nextElements) and p is not None:
+            if self.name == 'doctors':
+                if p['type'] == 1:
+                    e = self.chambers
+                else:
+                    e = random.choice(self.nextElements)
+            elif self.name == 'labs':
+                if p['type'] == 2:
                     e = self.nextElements[0]
                 else:
-                    if len(self.nextElements) > 1:
-                        e = self.nextElements[1]
+                    return
             else:
                 e = random.choice(self.nextElements)
             e.inAct(p)

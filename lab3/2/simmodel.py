@@ -8,10 +8,9 @@ class SimModel:
         c.setDistribution('exp')
         c.setName('creator')
         
-        p0 = Process(1/30, 0, 2)
+        p0 = Process(3, 1, 2)
         p0.setName('doctors')
         p0.setDistribution('exp')
-        p0.prob_h = .5
         
         p1 = Process(3, 8, 3)
         p1.setName('chambers')
@@ -29,6 +28,9 @@ class SimModel:
         p3.setDistribution('exp')
         #p3.setDistribution('erlang')
         
+
+        p0.chambers = p1
+        p0.registration = p2
         c.setNextElement(p0)
         p0.setNextElements([p1, p2])
         p2.setNextElements([p3])
@@ -36,5 +38,5 @@ class SimModel:
 
         elementsList = [c, p0, p1, p2, p3]
         model = Model(elementsList)    
-        model.simulate(100000.0)
+        model.simulate(10000.0)
     

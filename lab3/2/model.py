@@ -22,7 +22,7 @@ class Model:
                     self.tnext = e.getTnext()
                     self.event = e.getId()
                     name = e.getName()
-            #print("It's time for event in {} , time = {}".format(name ,self.tnext))
+            print("It's time for event in {} , time = {}".format(name ,self.tnext))
             for e in self.elementsList:
                 e.doStatistics(self.tnext - self.tcurr)
             self.tcurr = self.tnext
@@ -77,13 +77,12 @@ class Model:
             e.printResult()
             if isinstance(e, Process):
                 mean = e.getMeanQueue() / self.tcurr
-                wait = e.meanQueue / (e.quantity + e.failure)
+                if e.quantity > 0 or e.failure > 0:
+                    wait = e.meanQueue / (e.quantity + e.failure)
+                else:
+                    wait = 0
                 workload = e.workload / self.tcurr
-                out_window = self.tcurr / e.quantity
                 total_quantity += e.quantity
                 avg_bank += mean
                 failure_amount += e.failure
-                print('mean length of queue = {} \n failures = {} \n avg time in bank {} \n workload {} \n in progress {} \n in queue {} avg window {}'.format(mean, e.failure, wait, workload, len(e.state), len(e.queue), out_window))
-        print('average in bank: ', avg_bank)
-        failure = failure_amount / (failure_amount + total_quantity)
-        print('failure amount: ', failure)
+                print('mean length of queue = {} \n failures = {} \n avg time in hospital {} \n workload {} \n in progress {} \n in queue {}'.format(mean, e.failure, wait, workload, len(e.state), len(e.queue)))
