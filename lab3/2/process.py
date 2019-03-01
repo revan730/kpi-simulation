@@ -21,20 +21,18 @@ class Process(Element):
         self.registration = None
 
     def inAct(self, patient):
-        if len(self.state) <= self.maxParallel:
+        if len(self.state) < self.maxParallel:
             self.state.append(patient)
-        elif len(self.queue) <= self.maxQueue:
+        elif len(self.queue) < self.maxQueue:
             self.queue.append(patient)
         else:
             self.failure += 1
         # TODO: Set delay depending on patient type
-        '''
         if self.name == 'doctors':
             self.setTnext(self.getTcurr() + patient['delay'])
         else:
             self.setTnext(self.getTcurr() + self.getDelay())
-            '''
-        self.setTnext(self.getTcurr() + self.getDelay())
+        #self.setTnext(self.getTcurr() + self.getDelay())
 
     
     def outAct(self):
