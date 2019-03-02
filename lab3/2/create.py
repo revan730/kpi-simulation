@@ -14,7 +14,9 @@ class Create(Element):
 
     def outAct(self):
         super().outAct()
+        patient_type = np.random.choice([1, 2, 3], p=[0.5, 0.1, 0.4])
+        
         self.setTnext(self.getTcurr() + self.getDelay())
-        #TODO: Generate 3 types of patients
-        patientType = np.random.choice([1, 2, 3], p=[0.5, 0.1, 0.4])
-        self.getNextElement().inAct({ "type": patientType, "delay": delays[patientType]})
+        
+        self.getNextElement().setDelayMean(delays[patient_type])
+        self.getNextElement().inAct(patient_type)

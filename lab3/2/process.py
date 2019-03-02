@@ -20,48 +20,30 @@ class Process(Element):
         self.lab = None
         self.registration = None
 
-    def inAct(self, patient):
+    def inAct(self, p_type):
         if len(self.state) < self.maxParallel:
-            self.state.append(patient)
+            self.state.append(p_type)
         elif len(self.queue) < self.maxQueue:
-            self.queue.append(patient)
-        else:
-            self.failure += 1
-        # TODO: Set delay depending on patient type
-        if self.name == 'doctors':
-            self.setTnext(self.getTcurr() + patient['delay'])
-        else:
-            self.setTnext(self.getTcurr() + self.getDelay())
-        #self.setTnext(self.getTcurr() + self.getDelay())
+            self.queue.append(p_type)
+        self.setTnext(self.getTcurr() + self.getDelay())
 
     
     def outAct(self):
         super().outAct()
         self.setTnext(sys.float_info.max)
         
-        p = None
+        p_type = None
         if len(self.state) > 0:
-            p = self.state.pop(0)
+            p_type = self.state.pop(0)
         
-        self.setTnext(self.getTcurr() + self.getDelay())
-
-        if len(self.getQueue()) > 0:
-            pFromQueue = self.queue.pop(0)
-            self.state.append(pFromQueue)
-        if (self.nextElements) and p is not None:
-            if self.name == 'doctors':
-                if p['type'] == 1:
-                    e = self.chambers
-                else:
-                    e = random.choice(self.nextElements)
-            elif self.name == 'labs':
-                if p['type'] == 2:
-                    e = self.nextElements[0]
-                else:
-                    return
-            else:
-                e = random.choice(self.nextElements)
-            e.inAct(p)
+        if len(self.queue) > 0:
+            p_type_queue = self.queue.pop(0)
+            self.state.append(p_type_queue)
+        
+        if (self.nextElements) and (p_type is not None):
+            e = random.choice(self.nextElements)
+            e.inAct(p_type)
+    
 
     def setNextElements(self, nextElements):
         self.nextElements = nextElements
