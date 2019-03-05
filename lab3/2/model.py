@@ -1,5 +1,7 @@
 import sys
 from process import Process
+from doctors import Doctor
+from create import Create
 
 class Model:
     def __init__(self, elements):
@@ -24,7 +26,13 @@ class Model:
                     name = e.getName()
             print("It's time for event in {} , time = {}".format(name ,self.tnext))
             for e in self.elementsList:
-                e.doStatistics(self.tnext - self.tcurr)
+                if isinstance(e, Doctor):
+                    if len(e.state) > 0:    
+                        e.doStatistics(self.tnext - self.tcurr, e.state[0])
+                    else:
+                        e.doStatistics(self.tnext - self.tcurr, None)
+                else:
+                    e.doStatistics(self.tnext - self.tcurr)
             self.tcurr = self.tnext
             for e in self.elementsList:
                 e.setTcurr(self.tcurr)
@@ -41,48 +49,30 @@ class Model:
         for e in self.elementsList:
             e.printInfo()
 
-    def get_results(self):
-        res = []
-        for e in self.elementsList:
-            if isinstance(e, Process):
-                mean = e.meanQueue / self.tcurr
-                failure = e.failure / e.quantity
-                wait = e.meanQueue / (e.quantity + e.failure)
-                workload = e.workload / self.tcurr
-                print('name {} max_queue {} max_parallel {} delay_mean {} quantity {} dist {} mean queue {} failure {} wait {} workload {}'
-                .format(e.name, e.maxQueue, e.maxParallel, e.delayMean, e.quantity, e.distribution, mean, failure, wait, workload))
-                '''res.append({
-                    'name': e.name,
-                    'max_queue': e.maxQueue,
-                    'max_parallel': e.maxParallel,
-                    'delay_mean': e.delayMean,
-                    #'delay_std': e.get_delay_std(),
-                    'quantity': e.quantity,
-                    'distribution': e.distribution,
-                    'mean queue size': mean,
-                    'failure probability': failure,
-                    'avg wait time': wait,
-                    'workload': workload     
-                })'''
-        
-        #return res
-
     def printResult(self):
-        print('\n-----------RESULTS----------')
-        avg_bank = 0
-        failure_amount = 0
-        total_quantity = 0
+        print('\n____________________________')
+        print('\nRESULTS')
+        
+        t_w = 0
+        patients = 0
+       
         for e in self.elementsList:
-            print('\n')
+            if isinstance(e, Create):
+                patients = e.quantity
             e.printResult()
             if isinstance(e, Process):
-                mean = e.getMeanQueue() / self.tcurr
-                if e.quantity > 0 or e.failure > 0:
-                    wait = e.meanQueue / (e.quantity + e.failure)
-                else:
-                    wait = 0
+                
+                t_w += e.time_wait
+                #patients += e.in_wait
+                
+                mean = e.meanQueue / self.tcurr
+
                 workload = e.workload / self.tcurr
-                total_quantity += e.quantity
-                avg_bank += mean
-                failure_amount += e.failure
-                print('mean length of queue = {} \n failures = {} \n avg time in hospital {} \n workload {} \n in progress {} \n in queue {}'.format(mean, e.failure, wait, workload, len(e.state), len(e.queue)))
+                print('name {} max_parallel {}  quantity {} mean queue {} workload {}'
+                .format(e.name, e.maxParallel, e.quantity, round(mean, 3), round(workload, 3)))
+                if isinstance(e, Doctor):
+                    time_between_lab = e.delay_sum / e.to_lab_amount
+                    print('Avg trip from doctor to lab duration is ', round(time_between_lab, 3))
+                
+        avg_time = t_w / patients
+        print('Average time in the hospital is ', round(avg_time, 3))

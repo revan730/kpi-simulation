@@ -8,7 +8,7 @@ class SimModel:
         p1 = Process(.6, 1)
         p2 = Process(.3, 1)
         p3 = Process(.4, 1)
-        p4 = Process(.1, 1)
+        p4 = Process(.1, 2)
 
 
         print('id0 = {} id1= {} '.format(c.getId(), p1.getId()))
@@ -34,5 +34,12 @@ class SimModel:
 
         elementsList = [c, p1, p2, p3, p4]
         model = Model(elementsList)    
-        model.simulate(10000.0)
+        model.simulate(1000000.0)
+
+        res = model.returnResult()
+        res['theoretical_mean_queue'] = [1.786, 0.003, 0.004, 0.00001]
+        res['theoretical_workload'] = [0.714, 0.054, 0.062, 0.036]
+        res['queue_accuracy'] = 100*(abs(res.eval('mean - theoretical_mean_queue')) / res['theoretical_mean_queue'])
+        res['workload_accuracy'] = 100*(abs(res.eval('workload - theoretical_workload')) / res['theoretical_workload'])
+        print(res)
     

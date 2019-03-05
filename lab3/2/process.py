@@ -4,7 +4,7 @@ import numpy as np
 from element import Element
 
 class Process(Element):
-    def __init__(self, delay, delay_std, maxParallel):
+    def __init__(self, delay, delay_std=0, maxParallel=1):
         super().__init__(delay, delay_std)
         self.queue = []
         self.state = []
@@ -14,11 +14,10 @@ class Process(Element):
         self.maxQueue = 12345678999999
         self.meanQueue = 0.0
         self.workload = 0.0
+        self.in_wait = 0
+        self.time_wait = 0
+        self.delay_sum = 0
         self.nextElements = None
-        self.prob = None
-        self.chambers = None
-        self.lab = None
-        self.registration = None
 
     def inAct(self, p_type):
         if len(self.state) < self.maxParallel:
@@ -68,8 +67,12 @@ class Process(Element):
         print('failure = {}'.format(self.getFailure()))
 
     def doStatistics(self, delta):
-        self.meanQueue = self.getMeanQueue() + len(self.queue) * delta
+        self.meanQueue = self.meanQueue + len(self.queue) * delta
         self.workload += len(self.state) * delta
+        
+        self.time_wait += (len(self.queue) + len(self.state)) * delta
+        self.in_wait += (len(self.queue) + len(self.state))
+        self.delay_sum += delta
 
     def getMeanQueue(self):
         return self.meanQueue

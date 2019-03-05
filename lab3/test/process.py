@@ -76,4 +76,3 @@ class Process(Element):
 
     def getMeanQueue(self):
         return self.meanQueue
-

@@ -4,8 +4,8 @@ from model import Model
 
 class SimModel:
     def main(self):
-        p11 = Process(1, 0.3, 1)
-        p12 = Process(1, 0.3, 1)
+        p11 = Process(.3, .3, 1)
+        p12 = Process(.3, .3, 1)
         p11.otherProcess = p12
         p12.otherProcess = p11
         c = Create(.5)
@@ -27,5 +27,5 @@ class SimModel:
 
         elementsList = [c,p11, p12]
         model = Model(elementsList)    
-        model.simulate(1000.0)
+        model.simulate(10000.0)
     

@@ -12,7 +12,7 @@ class Element:
             self.quantity = 0
             self.distribution = ''
             self.tcurr = self.tnext
-            self.state = 0
+            self.state = []
             self.nextElement = None
             self.id = Element.nextId
             Element.nextId = Element.nextId + 1
@@ -24,7 +24,7 @@ class Element:
             self.quantity = 0
             self.distribution = 'exp'
             self.tcurr = self.tnext
-            self.state = 0
+            self.state = []
             self.nextElement = None
             self.id = Element.nextId
             Element.nextId = Element.nextId + 1

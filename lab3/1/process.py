@@ -3,7 +3,7 @@ import random
 from element import Element
 
 class Process(Element):
-    def __init__(self, delay, delay_std, maxParallel):
+    def __init__(self, delay, delay_std=0, maxParallel=1):
         super().__init__(delay)
         self.queue = 0
         self.delay_std = delay_std

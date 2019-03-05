@@ -6,6 +6,7 @@ from process import Process
 class Doctor(Process):
     def __init__(self, delay, st_dev=0, max_simult=1):
         super().__init__(delay, st_dev, max_simult)
+        self.to_lab_amount = 0
 
     def outAct(self):
         super().outAct()
@@ -28,4 +29,15 @@ class Doctor(Process):
                 e = self.nextElements[0]
             else:
                 e = self.nextElements[1]
+
+                self.to_lab_amount += 1
             e.inAct(p_type) 
+
+    def doStatistics(self, delta, state):
+        self.meanQueue = self.meanQueue + len(self.queue) * delta
+        self.workload += (len(self.state)) * delta
+        
+        self.time_wait += (len(self.queue) + len(self.state)) * delta
+        self.in_wait += (len(self.queue) + len(self.state))
+        if (state is not None) and (state in [2, 3]):
+            self.delay_sum += delta
