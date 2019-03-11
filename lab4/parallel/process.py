@@ -15,44 +15,25 @@ class Process(Element):
         self.nextElements = None
         self.elementsProbabilities = None
 
-    def inAct(self, i):
-        delta = self.maxParallel - self.state
-        if i < delta:
-            self.state += i
-            i = 0
-        else:
-            i -= delta
+    def inAct(self):
+        if self.state < self.maxParallel:
             self.state = self.maxParallel
+        elif self.queue < self.maxQueue:
+            self.queue += 1
+        else:
+            self.failure += 1
         self.setTnext(self.getTcurr() + self.getDelay())
-        if i > 0:
-            delta = self.maxQueue - self.queue
-            if i < delta:
-                self.queue += i
-                i = 0
-            else:
-                i -= delta
-                self.queue = self.maxQueue
-        if i > 0:
-            self.failure += i
     
     def outAct(self):
-        super().outAct(1)
+        super().outAct()
         self.setTnext(sys.float_info.max)
         self.state -= 1
         if self.getQueue() > 0:
             self.queue -= 1
             self.state += 1
             self.setTnext(self.getTcurr() + self.getDelay())
-        if (self.nextElements):
-            e = np.random.choice(self.nextElements, p=self.elementsProbabilities)
-            if e is not None:
-                '''if e.getQueue() > 2:
-                    print(e.getQueue())
-                    print('block')
-                else:
-                    e.inAct(1)'''
-                # Uncomment to enable blocking
-                e.inAct(1)
+        if self.nextElement:
+            self.nextElement.inAct()
 
     def setNextElements(self, nextElements):
         self.nextElements = nextElements

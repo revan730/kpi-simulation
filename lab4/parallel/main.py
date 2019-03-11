@@ -6,7 +6,7 @@ elements = 2
 timesList = []
 elList = []
 
-while elements <= 50:
+while elements <= 100:
     sim = SimModel()
     time = sim.main(elements)
     elList.append(elements)

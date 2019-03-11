@@ -6,7 +6,7 @@ from labs import Labs
 
 class SimModel:
     def main(self):
-        c = Create(1./15)
+        c = Create(15)
         c.setDistribution('exp')
         c.setName('creator')
         
@@ -16,8 +16,8 @@ class SimModel:
         
         p1 = Process(3, 8, 3)
         p1.setName('chambers')
-        #p1.setDistribution('unif')
-        p1.setDistribution('exp')
+        p1.setDistribution('unif')
+        #p1.setDistribution('exp')
         
         p2 = Process(3, 4.5, 1)
         p2.setName('registration')
