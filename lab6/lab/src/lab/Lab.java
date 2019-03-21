@@ -11,6 +11,7 @@ import PetriObj.PetriP;
 import PetriObj.PetriT;
 import PetriObj.ExceptionInvalidNetStructure;
 import PetriObj.ExceptionInvalidTimeDelay;
+import graphpresentation.RunPetriObjModel;
 import java.util.ArrayList;
 import PetriObj.PetriSim;
 
@@ -127,7 +128,7 @@ public class Lab {
 	d_Out.add(new ArcOut(d_T.get(9),d_P.get(11),1));
 	d_Out.add(new ArcOut(d_T.get(9),d_P.get(3),1));
 	d_Out.add(new ArcOut(d_T.get(10),d_P.get(1),1));
-	PetriNet d_Net = new PetriNet("1",d_P,d_T,d_In,d_Out);
+	PetriNet d_Net = new PetriNet("1.g.pns.pns",d_P,d_T,d_In,d_Out);
 	PetriP.initNext();
 	PetriT.initNext();
 	ArcIn.initNext();
@@ -140,11 +141,15 @@ public class Lab {
      */
     public static void main(String[] args) throws ExceptionInvalidNetStructure, ExceptionInvalidTimeDelay {
         // TODO code application logic here
-        PetriNet p1 = Lab.CreateSMO();
+        PetriNet p1 = Lab.CreateNet();
         PetriSim ps = new PetriSim(p1);
+        ArrayList<PetriSim> arr;
+        arr = new ArrayList<PetriSim>();
+        arr.add(ps);
+        RunPetriObjModel r = new RunPetriObjModel(arr);
+        r.go(1000);
         //ps.setSimulationTime(1000);
         //ps.setTimeCurr(0);
-        ps.go(1000000);
         System.out.println("Finished");
     }
     

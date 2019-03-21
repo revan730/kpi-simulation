@@ -497,7 +497,7 @@ public class PetriSim implements Cloneable, Serializable {
             }
         }
     }
-    
+
     /**
      * This method use for simulating Petri-object until current time less then
      * the momemt in parametr time
