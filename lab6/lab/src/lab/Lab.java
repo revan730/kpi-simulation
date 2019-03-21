@@ -136,20 +136,78 @@ public class Lab {
 
 	return d_Net;
 }
+    
+    
+public static PetriNet CreateNetServers() throws ExceptionInvalidNetStructure, ExceptionInvalidTimeDelay {
+	ArrayList<PetriP> d_P = new ArrayList<>();
+	ArrayList<PetriT> d_T = new ArrayList<>();
+	ArrayList<ArcIn> d_In = new ArrayList<>();
+	ArrayList<ArcOut> d_Out = new ArrayList<>();
+	d_P.add(new PetriP("Creator",1));
+	d_P.add(new PetriP("P2",0));
+	d_P.add(new PetriP("P3",20));
+	d_P.add(new PetriP("P4",0));
+	d_P.add(new PetriP("P5",0));
+	d_P.add(new PetriP("Success",0));
+	d_P.add(new PetriP("P7",0));
+	d_P.add(new PetriP("P8",50));
+	d_P.add(new PetriP("P9",0));
+	d_T.add(new PetriT("T1",2.0));
+	d_T.get(0).setDistribution("exp", d_T.get(0).getTimeServ());
+	d_T.get(0).setParamDeviation(0.0);
+	d_T.add(new PetriT("T2",20.0));
+	d_T.get(1).setDistribution("exp", d_T.get(1).getTimeServ());
+	d_T.get(1).setParamDeviation(0.0);
+	d_T.get(1).setPriority(1);
+	d_T.add(new PetriT("T3",0.0));
+	d_T.add(new PetriT("T4",0.0));
+	d_T.get(3).setProbability(0.3);
+	d_T.add(new PetriT("T5",0.0));
+	d_T.get(4).setProbability(0.7);
+	d_T.add(new PetriT("T6",10.0));
+	d_T.get(5).setDistribution("exp", d_T.get(5).getTimeServ());
+	d_T.get(5).setParamDeviation(0.0);
+	d_T.get(5).setPriority(1);
+	d_T.add(new PetriT("T7",0.0));
+	d_In.add(new ArcIn(d_P.get(0),d_T.get(0),1));
+	d_In.add(new ArcIn(d_P.get(1),d_T.get(1),1));
+	d_In.add(new ArcIn(d_P.get(2),d_T.get(1),1));
+	d_In.add(new ArcIn(d_P.get(1),d_T.get(2),1));
+	d_In.add(new ArcIn(d_P.get(4),d_T.get(3),1));
+	d_In.add(new ArcIn(d_P.get(4),d_T.get(4),1));
+	d_In.add(new ArcIn(d_P.get(6),d_T.get(5),1));
+	d_In.add(new ArcIn(d_P.get(7),d_T.get(5),1));
+	d_In.add(new ArcIn(d_P.get(6),d_T.get(6),1));
+	d_Out.add(new ArcOut(d_T.get(0),d_P.get(0),1));
+	d_Out.add(new ArcOut(d_T.get(0),d_P.get(1),1));
+	d_Out.add(new ArcOut(d_T.get(1),d_P.get(2),1));
+	d_Out.add(new ArcOut(d_T.get(2),d_P.get(3),1));
+	d_Out.add(new ArcOut(d_T.get(1),d_P.get(4),1));
+	d_Out.add(new ArcOut(d_T.get(3),d_P.get(5),1));
+	d_Out.add(new ArcOut(d_T.get(4),d_P.get(6),1));
+	d_Out.add(new ArcOut(d_T.get(5),d_P.get(7),1));
+	d_Out.add(new ArcOut(d_T.get(6),d_P.get(8),1));
+	d_Out.add(new ArcOut(d_T.get(5),d_P.get(1),1));
+	PetriNet d_Net = new PetriNet("netServers",d_P,d_T,d_In,d_Out);
+	PetriP.initNext();
+	PetriT.initNext();
+	ArcIn.initNext();
+	ArcOut.initNext();
+
+	return d_Net;
+}
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws ExceptionInvalidNetStructure, ExceptionInvalidTimeDelay {
         // TODO code application logic here
-        PetriNet p1 = Lab.CreateNet1();
+        PetriNet p1 = Lab.CreateNetServers();
         PetriSim ps = new PetriSim(p1);
         ArrayList<PetriSim> arr;
         arr = new ArrayList<PetriSim>();
         arr.add(ps);
         RunPetriObjModel r = new RunPetriObjModel(arr);
         r.go(1000);
-        //ps.setSimulationTime(1000);
-        //ps.setTimeCurr(0);
         System.out.println("Finished");
     }
     
