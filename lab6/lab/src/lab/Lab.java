@@ -45,7 +45,7 @@ public class Lab {
 	return d_Net;
     }
 
-    public static PetriNet CreateNet() throws ExceptionInvalidNetStructure, ExceptionInvalidTimeDelay {
+    public static PetriNet CreateNet1() throws ExceptionInvalidNetStructure, ExceptionInvalidTimeDelay {
 	ArrayList<PetriP> d_P = new ArrayList<>();
 	ArrayList<PetriT> d_T = new ArrayList<>();
 	ArrayList<ArcIn> d_In = new ArrayList<>();
@@ -141,7 +141,7 @@ public class Lab {
      */
     public static void main(String[] args) throws ExceptionInvalidNetStructure, ExceptionInvalidTimeDelay {
         // TODO code application logic here
-        PetriNet p1 = Lab.CreateNet();
+        PetriNet p1 = Lab.CreateNet1();
         PetriSim ps = new PetriSim(p1);
         ArrayList<PetriSim> arr;
         arr = new ArrayList<PetriSim>();
