@@ -102,3 +102,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/lab6/lab/nbproject/private/
